@@ -1,73 +1,95 @@
 # AntAPI Skills
 
-所有 AntAPI 官方产品 Skills 的集中仓库。每个 Skill 支持单独安装，通过官方 CLI 调用同一套平台 API、AK 和 Credits。
+[English](README.md) | [简体中文](README.zh-CN.md)
 
-## 当前状态
+Official AntAPI skills for coding agents. Install individual skills and use the official [AntAPI CLI](https://github.com/xiaopozhu/antapi-cli) to access the same platform APIs, API keys, and Credits.
 
-已实现首个候选 Skill `skills/antapi-whois`，支持域名注册信息和 TLD 覆盖查询，依赖官方 CLI
-`>=0.1.0 <1.0.0` 与公开 API v1。Skill 和引用面向全球用户使用英文；仓库工程文档使用中文。
-候选版本为 `0.1.0`，尚未正式发布。CI 与本地格式检查通过不表示生产调用已验收；不提供已发布安装命令。
+## Install with `npx skills`
 
-## 本地检查
+Run from your project directory:
 
-结构与打包检查依赖 Python 3.9+ 和 Make；官方格式校验需要 Python 3.11+ 的独立工具环境：
+```bash
+npx skills add xiaopozhu/antapi-skills --skill antapi-whois
+```
+
+Choose your coding agent when prompted. Add `-g` for a user-wide installation, or `--agent codex` to target Codex. To list available skills:
+
+```bash
+npx skills add xiaopozhu/antapi-skills --list
+```
+
+This uses the npm-distributed [`skills` installer](https://github.com/vercel-labs/skills) to fetch skills from GitHub. The `antapi-skills` repository does not need its own npm registry package.
+
+**Current status:** this command follows the repository's default branch and installs a development candidate. It is not a stable product release. The first WHOIS Skill candidate is `0.1.0`; production API and billing acceptance are pending. Stable installation sources will be pinned to verified tags/commits or release archives.
+
+### Requirements
+
+- A supported Node.js runtime for the installer; see its [installation documentation](https://github.com/vercel-labs/skills#install-a-skill).
+- Official AntAPI CLI, stable version `>=0.1.0 <1.0.0`, using public API v1.
+- A locally configured Gateway profile and API key. Follow the CLI README; never paste credentials into agent chat.
+
+The CLI's first stable release has not been published yet. Development CLI builds report `dev`, which the Skill rejects. Installing a Skill does not install the CLI or configure credentials.
+
+## Available skills
+
+| Skill | Purpose | CLI compatibility |
+| --- | --- | --- |
+| [`antapi-whois`](skills/antapi-whois/SKILL.md) | Domain registration details and TLD coverage | `>=0.1.0 <1.0.0` |
+
+Skills and bundled references are English. Code comments and engineering notes are Chinese; README files are available in both languages.
+
+## Local validation
+
+Structure and packaging checks require Python 3.9+ and Make. The pinned official format validator requires a separate Python 3.11+ environment:
 
 ```bash
 python3.12 -m venv .venv
 .venv/bin/python -m pip install -r requirements-tools.txt
 make verify SKILLS_REF=.venv/bin/skills-ref
+make check-release SKILLS_REF=.venv/bin/skills-ref
 ```
 
-官方 [skills-ref](https://github.com/agentskills/agentskills/tree/69ef37e9424c0a7ea9dd2293b559e43ec8176379/skills-ref)
-固定到 `69ef37e9424c0a7ea9dd2293b559e43ec8176379`，由 CI 与工具依赖共同记录；不会用自制检查器冒充官方格式验证。
+[`skills-ref`](https://github.com/agentskills/agentskills/tree/69ef37e9424c0a7ea9dd2293b559e43ec8176379/skills-ref) is pinned to commit `69ef37e9424c0a7ea9dd2293b559e43ec8176379`. `make verify` runs structure/reference checks, packaging tests, and official format validation. `make check-release` additionally rejects an empty repository. An empty bootstrap fixture may pass basic checks, with nothing installable.
 
-基础检查可单独运行：
+Use `make check` and `make test` for the basic checks. The structure checker rejects symlinks, special files, missing references, and Markdown/HTML references escaping an individual skill. It does not replace format validation or Agent behavior evaluation.
 
-```bash
-make check
-make test
-```
+[`tests/whois-scenarios.json`](tests/whois-scenarios.json) defines offline tasks and acceptance criteria. A scenario file is not execution evidence; see [evaluation records and limits](tests/README.md) for the checks actually performed. Local CI does not establish production readiness.
 
-`scripts/check_structure.py` 检查目录命名、非空 `SKILL.md`、普通文件、禁止符号链接，以及 Markdown/HTML 本地引用必须存在并留在单个 Skill 内；不解析 YAML，也不验证触发效果。
-`make verify` 在结构及脚本测试后调用官方校验器；零 Skill 时明确显示未进行格式校验。`tests/whois-scenarios.json` 是无真实 AK 的行为验收输入与准则，存在场景文件不表示验收已执行。
-
-检查器仍允许初始化 fixture 的 `skills/` 为空并明确打印 `nothing installable`；正式发布前运行
-`make check-release SKILLS_REF=.venv/bin/skills-ref`，空仓库必须失败。发布还必须完成 CLI 联合测试与真实 Agent 任务验收。
-场景及实际执行证据边界见 [验收说明](tests/README.md)。
-
-## 候选包
+## Candidate packages
 
 ```bash
 python3 scripts/package_skills.py --output /tmp/antapi-skill-packages
 ```
 
-打包器拒绝空仓库、符号链接、特殊文件、越界引用和位于 `skills/` 内的输出目录。每个 Skill 生成
-`<skill>-<version>.tar.gz`，同时生成 `SHA256SUMS` 与 `manifest.json`。归档仅包含该 Skill 的目录，
-条目按路径排序并固定时间、权限及属主；相同内容产生相同字节。版本默认读取 `VERSION`，可显式传入
-`--version`；`--commit` 仅接受完整 SHA，未提供时明确记为 `uncommitted`，不冒充实际 tag 或发布记录。
-打包不会安装 Skill、提交代码或发布稳定版本。
+The packager creates `<skill>-<version>.tar.gz`, `SHA256SUMS`, and `manifest.json`. Each archive contains its independent skill directory and all bundled references. Entry order, timestamps, permissions, and ownership are deterministic; identical inputs produce identical bytes.
 
-## 内容组织
+The version defaults to `VERSION` and can be overridden with `--version`. `--commit` accepts a full SHA; omitting it explicitly records `uncommitted`. Packaging rejects empty repositories, symlinks, special files, escaping references, and output paths inside `skills/`. It does not install skills, commit code, or publish a stable release.
+
+For isolated local testing, copy the complete `skills/antapi-whois/` directory into your agent's skills directory, or run:
+
+```bash
+npx skills add /absolute/path/to/antapi-skills --skill antapi-whois
+```
+
+Keep the bundled references. Verify checksums before manually extracting candidate archives.
+
+## Repository layout
 
 ```text
 skills/
   antapi-<product>/
     SKILL.md
     references/
-    scripts/
+    scripts/       # only when a workflow needs a helper
 ```
 
-Skill 围绕用户任务和产品划分，不为每个 endpoint 单独创建 Skill。命名和 frontmatter 遵循 [Agent Skills 规范](https://agentskills.io/specification)。每个目录可独立分发，引用不能依赖其他 Skill 或仓库外部相对路径。
+Organize skills around user tasks and products, following the [Agent Skills specification](https://agentskills.io/specification). Each directory must work independently, with no cross-skill relative dependencies. `SKILL.md` defines triggers, CLI/API compatibility, workflow, authorization bounds, interpretation, and recovery. HTTP, authentication, and retry behavior belong to the CLI.
 
-`SKILL.md` 说明触发条件、CLI 依赖、流程、数量上限、错误恢复和凭据使用方式。HTTP、认证和重试能力由官方 CLI 提供，只有任务编排需要时才增加薄脚本。
+## Coordinated releases
 
-## 协同发布
+The repository uses one version/tag for all skills. [AntAPI](https://github.com/xiaopozhu/antapi) coordinates API/Gateway acceptance → CLI → Skills → website. Each batch pins the tested version/commit combination; unchanged components reuse the previous verified release.
 
-仓库整体使用一个 tag，不给每个 Skill 维护独立发布流水线。稳定安装入口固定到已验证的 tag/commit。
-尚未正式发布时不提供稳定 tag 安装命令。可将单个本地 `skills/antapi-whois/` 目录复制至隔离 Agent 的
-Skill 目录进行验收；该目录的引用不依赖仓库其他位置。候选 archive 也仅含同名单个根目录，安装前先核对 `SHA256SUMS`。
+The default-branch install above previews candidates. Stable installation instructions will pin the accepted source instead of tracking `main`. CI validates changes and does not publish automatically on push or tag.
 
-正式发布由 [antapi](https://github.com/xiaopozhu/antapi) 总入口发起，顺序为 API/Gateway 验收 → CLI → Skills → 官网。每批次明确 CLI 与 Skills 的版本组合，没有变化的组件沿用旧版本。
-
-- [三仓库协同发布设计](https://github.com/xiaopozhu/antapi/blob/main/docs/design/coordinated-product-release.md)
-- [实施计划](https://github.com/xiaopozhu/antapi/blob/main/docs/superpowers/plans/2026-10-22-coordinated-product-release.md)
+- [Release design](https://github.com/xiaopozhu/antapi/blob/main/docs/design/coordinated-product-release.md)
+- [Implementation plan](https://github.com/xiaopozhu/antapi/blob/main/docs/superpowers/plans/2026-10-22-coordinated-product-release.md)
