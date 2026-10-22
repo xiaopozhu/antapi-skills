@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-所有 AntAPI 官方产品与维护 Skills 的集中仓库。产品 Skill 支持单独安装，通过官方 CLI 调用同一套平台 API、AK 和 Credits；维护 Skill 使用源码构建工具和 `gh`。
+所有 AntAPI 官方产品 Skills 的集中仓库。每个 Skill 支持单独安装，通过官方 CLI 调用同一套平台 API、AK 和 Credits。
 
 ## 当前状态
 
@@ -85,26 +85,8 @@ Skill 围绕用户任务和产品划分，不为每个 endpoint 单独创建 Ski
 
 `SKILL.md` 说明触发条件、CLI 依赖、流程、数量上限、错误恢复和凭据使用方式。HTTP、认证和重试能力由官方 CLI 提供，只有任务编排需要时才增加薄脚本。
 
-## 发布维护 Skill
+## 发布范围
 
-新增 `skills/antapi-release`，用于版本化发布目录、公开 Swagger/changelog、CLI 与全仓 Skills 同步及最后的 Admin 手动交接；无需用户 AK。新 Skill 尚未推送时从本地安装：
+本仓库仅分发面向调用方的产品 Skill。内部发布、运维和管理员 Skill 放在私有 AntAPI 项目中，不进入本仓库、安装列表或分发归档。
 
-```bash
-npx skills add /absolute/path/to/antapi-skills --skill antapi-release
-```
-
-进入目标远端 ref 后可将本地路径换成 `xiaopozhu/antapi-skills`，通过 `$antapi-release` 指定产品和版本发起。远端操作统一使用 `gh`；依赖主仓库的 `scripts/api-release-export`，主仓库本地改动尚未进入远端时不能假定远端已有该导出器。
-
-新接口未生效默认使用候选 Draft Release；明确选择先正式发布时须验证客户端兼容线上 API。Docker 部署与 Admin 生效仍由操作者完成。当前 Admin 只导入 Swagger JSON，尚不能上传整个发布包或保存 changelog。
-
-## 协同发布
-
-仓库整体使用一个 tag，不给每个 Skill 维护独立发布流水线。稳定安装入口固定到已验证的 tag/commit。
-尚未正式发布时不提供稳定 tag 安装命令。开发预览使用上方默认分支安装入口。
-本地验收可执行 `npx skills add /absolute/path/to/antapi-skills --skill antapi-whois`，或将完整
-`skills/antapi-whois/` 复制至隔离 Agent 的 Skill 目录，保留 bundled references；不依赖仓库其他位置。
-候选 archive 仅含同名单个根目录，手动解压前先核对 `SHA256SUMS`。
-
-当前流程为冻结 API 发布包 → CLI/Skills 候选或已验证兼容的正式版本 → 手动 Admin 生效，替代此前先发布 API 的 coordinator 顺序。各仓库独立版本，无变化的组件沿用已验证版本。打包包括所有 Skill 目录，不只 WHOIS。
-
-操作约定见主仓库 `docs/ops/api-release-skill.md` 与本 Skill 的 bundled references。主仓库当前本地实现进入远端后才能使用对应远端文档链接。CI 只验证，不会在 push/tag 时自动发布。
+所有产品 Skill 使用仓库级版本/tag，与 CLI 独立版本。每个 Skill 声明 CLI 兼容范围和公开 API 主版本；稳定安装固定到已验证的 tag/commit 或归档。默认分支仅预览候选。CI 只验证，不在 push/tag 时自动发布。

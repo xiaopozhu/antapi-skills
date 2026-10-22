@@ -13,7 +13,7 @@ Supported official CLI: stable `>=0.1.0 <1.0.0`; public AntAPI API major: `v1`. 
 
 Optional root flags go before `whois`: `--config PATH`, `--profile NAME`, `--gateway-url ORIGIN`, `--core-url ORIGIN`. For example, `antapi --profile work whois lookup example.com --json`. Keep a user's selected profile and deployment; do not invent a production hostname. WHOIS requests go only through the configured Gateway, never to Own API directly. `core_url` is not used for WHOIS calls.
 
-Configuration defaults to `$XDG_CONFIG_HOME/antapi/config.json` when set, otherwise the operating system's user configuration directory under `antapi/`. It selects `default_profile` and `profiles` containing `gateway_url`, `core_url`, `development`, and `timeout_seconds`. HTTPS is required except explicit localhost/loopback development. Do not switch to development to work around a remote connection failure.
+Configuration defaults to `$HOME/.antapi/config.json` (`%USERPROFILE%\.antapi\config.json` on Windows), independent of `XDG_CONFIG_HOME`. Use `--config` to select another file; credentials remain beside that selected file. It selects `default_profile` and `profiles` containing `gateway_url`, `core_url`, `development`, and `timeout_seconds`. HTTPS is required except explicit localhost/loopback development. Do not switch to development to work around a remote connection failure.
 
 `ANTAPI_API_KEY` overrides the selected profile's entry in `credentials.json` beside the config file. That file must be a regular, non-symlink file with POSIX mode `0600`; Windows uses environment credentials. Have the user provision credentials locally through a private workflow. Do not request, display, or copy their value into chat or shell history. No AK flag or login command exists.
 

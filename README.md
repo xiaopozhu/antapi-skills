@@ -2,7 +2,7 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-Official AntAPI product and maintainer skills for coding agents. Product skills use the official [AntAPI CLI](https://github.com/xiaopozhu/antapi-cli) to access the same platform APIs, API keys, and Credits.
+Official AntAPI product skills for coding agents. Use the official [AntAPI CLI](https://github.com/xiaopozhu/antapi-cli) to access the same platform APIs, API keys, and Credits.
 
 ## Install with `npx skills`
 
@@ -35,7 +35,6 @@ The CLI's first stable release has not been published yet. Development CLI build
 | Skill | Purpose | CLI compatibility |
 | --- | --- | --- |
 | [`antapi-whois`](skills/antapi-whois/SKILL.md) | Domain registration details and TLD coverage | `>=0.1.0 <1.0.0` |
-| [`antapi-release`](skills/antapi-release/SKILL.md) | Maintainer: prepare API release artifacts, synchronize client releases through `gh`, and hand off manual Admin activation | Source builders + `gh`; no consumer API key |
 
 Skills and bundled references are English. Code comments and engineering notes are Chinese; README files are available in both languages.
 
@@ -86,18 +85,8 @@ skills/
 
 Organize skills around user tasks and products, following the [Agent Skills specification](https://agentskills.io/specification). Each directory must work independently, with no cross-skill relative dependencies. `SKILL.md` defines triggers, CLI/API compatibility, workflow, authorization bounds, interpretation, and recovery. HTTP, authentication, and retry behavior belong to the CLI.
 
-## Maintainer release skill
+## Releases
 
-```bash
-npx skills add /absolute/path/to/antapi-skills --skill antapi-release
-```
+This repository contains customer-facing product skills only. Internal release, operations, and administrator skills belong in the private AntAPI project and are excluded from distribution.
 
-Use this local-source command while the new skill is unpublished. Once present on the target GitHub ref, replace the local path with `xiaopozhu/antapi-skills`. Invoke it with `$antapi-release` and the product/version to prepare. It creates a versioned handoff directory containing the public Swagger, changelog, source/version identity, checksums and client artifacts; remote operations use GitHub CLI. It does not need a consumer API key.
-
-New endpoints awaiting Admin activation use candidate Draft Releases by default. An explicitly chosen stable client release must remain compatible with the active API. Docker deployment and Admin activation remain operator actions. Admin currently imports the Swagger JSON only; it does not accept a release bundle or store changelogs. The release skill requires AntAPI's `scripts/api-release-export` public-contract exporter.
-
-## Coordinated releases
-
-The repository uses one version/tag for all skills. The maintainer skill coordinates a frozen API release folder → CLI/Skills candidates or verified compatible releases → manual Admin activation. Versions are independent; unchanged clients reuse verified releases. This supersedes the earlier API-first coordinator order. See [the current runbook](https://github.com/xiaopozhu/antapi/blob/main/docs/ops/api-release-skill.md) and the skill's bundled references; locally prepared AntAPI changes must be available before those remote documentation/exporter paths can be used.
-
-The default-branch install above previews product candidates. Stable sources must be pinned to verified tags/commits or archives. CI validates changes and does not automatically publish on push or tag. Packaging includes every skill directory, not only WHOIS.
+All product skills share one repository version/tag. CLI and Skills versions are independent; each skill declares its supported CLI range and public API major. Stable installation sources are pinned to verified tags/commits or archives. The default-branch install above previews candidates. CI validates changes and does not automatically publish on push or tag.
