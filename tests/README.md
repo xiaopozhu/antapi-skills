@@ -63,3 +63,33 @@ Skill 归档来自测试 fixture commit `f0832bb61b0dd6c489f5d42ac6ca24aceb00670
 Receipt ID `9007199254740993` 在实际 CLI 输出中保留字符串。
 Agent 执行环境为当前 Codex 会话；本环境未公开可固定的软件构建版本，故不虚构 Agent 版本号。
 本次补充验收仍是合成 Gateway，不能替代生产调用与资金核账。
+
+
+## 2026-10-22 发布维护 Skill 验收
+
+新增 `antapi-release` 与 WHOIS 消费 Skill 独立分发。创建前运行未加载该 Skill 的独立 Agent：
+基线已正确拒绝覆盖冲突的公开 tag/资产和直接公开内部 Swagger，没有观察到这些错误；
+不将基线的正确行为伪称为失败。初始普通方案未形成固定身份 manifest 与候选/正式交接协议，
+本 Skill 补充项目特定的导出器、现有 builder、全仓打包和 gh 恢复过程。
+
+加载 Skill 后另一个独立 Agent 在隔离临时目录完成一次离线交接任务，读取 Skill/ref 和仓库原始资料，
+面对新 batch 未激活、CLI 不支持 batch、既有公开版本指向其他 commit 且缺附件的组合场景，
+实际写出了交接文件，没有调用网络、修改真实仓库或声称发布完成。观察结果：
+
+- 正确区分普通 CI 与 tag 发布，不虚构 release workflow。
+- 不覆盖公开 tag、不补入不同来源附件，不将 operator 所称测试绿当作独立运行证明。
+- 指出 raw Swagger 内部认证头和 Admin 不支持 bundle/changelog 的现实限制。
+- 报告 CLI 实现、真实源码 SHA、候选校验与远端发布均未完成，没有误报 ready for Admin。
+- 识别 Skills packager 只记录 --commit、不验证实际来源的缺口，已据此补充精确 checkout、干净目录与 commit tree 清单核验要求。
+
+协调 Agent 运行 `make check-release`：20 项脚本测试、两个 Skill 的结构/引用及固定官方格式校验通过；
+skill-creator 的 quick_validate 通过。对当前两个 Skill 进行实际候选打包，逐包验证 SHA256、完整成员集合和
+源文件逐字节一致，解压后的独立 antapi-release 再通过官方格式检查。此次目录明确记录 `uncommitted`，
+仅为分发验收，不冒充正式源码或发布。解压 QA 使用 Python 3.14；系统 Python 3.9 不支持 tarfile 的 filter 参数。
+
+主仓库公开合同导出器以真实 generated Swagger 验证：只开放选中 WHOIS 的两接口、去内部头、使用 PlatformAK、
+可由 Catalog parser 再次导入，重复输出拒绝覆盖；无效、外部引用、超限、空接口与错误版本均被拒绝。
+主仓库 `go build ./...`、`golangci-lint run`、导出器与 Catalog 测试通过，已运行 `zero swag --app own-api`。
+
+以上是离线行为与本地工程验收，未执行真实 GitHub 远端写入、CI 发布、Docker 部署、Admin 激活或付费调用。
+递归封存/远端恢复仍由 Skill 指导执行，没有新增发布引擎；真正批次必须核验其自身制品和生产事实。
