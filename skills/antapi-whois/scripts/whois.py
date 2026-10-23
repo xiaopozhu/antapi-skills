@@ -12,6 +12,7 @@ from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_ope
 
 MAX_RESPONSE_BYTES = 1024 * 1024
 TIMEOUT_SECONDS = 30
+DEFAULT_GATEWAY_URL = "https://api.antapi.dev"
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -26,7 +27,7 @@ def open_request(request):
 
 def configuration():
     key = os.environ.get("ANTAPI_KEY", "")
-    origin = os.environ.get("ANTAPI_GATEWAY_URL", "")
+    origin = os.environ.get("ANTAPI_GATEWAY_URL", DEFAULT_GATEWAY_URL)
     parsed = urlsplit(origin)
     development = os.environ.get("ANTAPI_DEVELOPMENT") == "1"
     local = parsed.hostname in ("localhost", "127.0.0.1", "::1")

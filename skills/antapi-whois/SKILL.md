@@ -9,7 +9,7 @@ metadata:
 # AntAPI WHOIS
 
 Retrieve and explain domain registration records through the AntAPI HTTP API. This Skill installs independently and includes its own bounded HTTP helper. Read [API access and output](references/api.md) before invoking it; consult [error recovery](references/errors.md) when a request fails.
-The helper needs Python 3.9+, network access, and locally provisioned `ANTAPI_GATEWAY_URL` and `ANTAPI_KEY`.
+The helper needs Python 3.9+, network access, and a locally provisioned `ANTAPI_KEY`. The official Gateway defaults to `https://api.antapi.dev`; users do not need to configure its URL.
 
 ## Before a lookup
 
@@ -17,7 +17,7 @@ The helper needs Python 3.9+, network access, and locally provisioned `ANTAPI_GA
 2. Honor the user's existing authorization for targets, quantity, and cost. Ask only when information needed to stay within that authorization is missing. Do not add exploratory paid lookups, expand to related domains, or re-confirm an already authorized single lookup. This Skill covers single-domain lookup and TLD coverage; use the API documentation for batch workflows.
 3. Use the bundled helper from this installed Skill directory. It reads locally provisioned credentials and calls the configured Gateway directly. Do not require, install or run the separate AntAPI CLI as a prerequisite.
 
-Use already provisioned `ANTAPI_GATEWAY_URL` and `ANTAPI_KEY` in the helper's process environment. Never ask for an AK in chat, put it in command arguments, print environment values or credential files, or submit it to a returned link. Missing credentials require local setup in the agent's environment. Installing this Skill does not create a project key.
+Use the already provisioned `ANTAPI_KEY` in the helper's process environment. `ANTAPI_GATEWAY_URL` is optional and only overrides the official origin for an explicitly selected test or development environment; preserve an existing explicit override. Never ask for an AK in chat, put it in command arguments, print environment values or credential files, or submit it to a returned link. Missing credentials require local setup in the agent's environment. Installing this Skill does not create a project key.
 
 ## Execute and explain
 

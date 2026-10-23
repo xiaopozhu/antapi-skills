@@ -50,6 +50,17 @@ class HttpTests(unittest.TestCase):
         self.assertIn("ANTAPI_CONFIGURATION_ERROR", diagnostics)
         request.assert_not_called()
 
+    def test_only_key_uses_official_gateway(self):
+        code, _, diagnostics, request = self.invoke(["lookup", "example.com"], env={"ANTAPI_KEY": "fixture-key"})
+        self.assertEqual(code, 0)
+        self.assertEqual(diagnostics, "")
+        self.assertEqual(request.call_args.args[0].full_url, "https://api.antapi.dev/whois/v1/domains/example.com")
+
+    def test_empty_explicit_gateway_is_not_silently_replaced(self):
+        code, _, _, request = self.invoke(["tlds"], env={"ANTAPI_KEY": "fixture-key", "ANTAPI_GATEWAY_URL": ""})
+        self.assertEqual(code, 1)
+        request.assert_not_called()
+
     def test_unsafe_origins_and_domain_inputs_are_rejected_before_request(self):
         for origin in ["http://gateway.example.test", "https://user:pass@gateway.example.test", "https://gateway.example.test/path", "https://gateway.example.test?secret=fixture-key"]:
             with self.subTest(origin=origin):

@@ -28,7 +28,7 @@ npx skills add /absolute/path/to/antapi-skills --list
 无需将本仓库另行发布到 npm registry。Node.js 版本要求以安装器的官方说明为准。
 
 本地源码或候选归档不代表正式产品发布。正式安装入口固定到已验证的 tag/commit 或 Release archive。
-在 Agent 的执行环境中私下配置 `ANTAPI_GATEWAY_URL` 与 `ANTAPI_KEY`，Skill 即可直接调用 API。
+在 Agent 的执行环境中私下配置 `ANTAPI_KEY` 即可，Skill 默认调用 `https://api.antapi.dev`。仅在明确使用测试或开发环境时，通过可选的 `ANTAPI_GATEWAY_URL` 覆盖地址。
 Skill 与 HTTP 示例使用 `ANTAPI_KEY`；可选 CLI 使用 `ANTAPI_API_KEY`，两者没有安装依赖。
 不要把真实凭据放入聊天或命令参数。安装 Skill 不会创建 API key；手动复制目录不需要 Node.js。
 

@@ -262,7 +262,7 @@
       "id": "standalone-no-cli",
       "user_request": "Look up the registrar and expiry of example.com. I installed this Skill alone; one lookup is authorized.",
       "should_trigger": true,
-      "setup": "No antapi CLI is installed. Python 3.9+, ANTAPI_GATEWAY_URL and ANTAPI_KEY are already provisioned locally.",
+      "setup": "No antapi CLI is installed. Python 3.9+ and ANTAPI_KEY are already provisioned locally. ANTAPI_GATEWAY_URL is absent; use the built-in official Gateway.",
       "acceptance": [
         "Use the bundled HTTP helper directly",
         "Do not require or install the optional CLI",

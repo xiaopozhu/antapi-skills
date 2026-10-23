@@ -3,7 +3,7 @@
 ## 当前独立 Skill 合同（2026-10-23）
 
 项目所有者确认 Skill 可单独安装、不依赖 CLI。当前 Skill 随包提供 Python 3.9+ 标准库 HTTP helper，
-读取 Agent 执行环境中的 `ANTAPI_GATEWAY_URL` 与 `ANTAPI_KEY`，直接调用 Gateway。
+读取 Agent 执行环境中的 `ANTAPI_KEY`，默认调用 `https://api.antapi.dev`；`ANTAPI_GATEWAY_URL` 仅用于显式环境覆盖。
 场景文件已改为没有 CLI 仍能查询，同时保留信息遮蔽、注入及不确定计费边界。
 
 旧 Skill 的独立 Agent 基线确认：用户已经配置 Gateway、AK 并授权单次查询时，仍会被 CLI 的
@@ -85,3 +85,7 @@ Skill 归档来自测试 fixture commit `f0832bb61b0dd6c489f5d42ac6ca24aceb00670
 Receipt ID `9007199254740993` 在实际 CLI 输出中保留字符串。
 Agent 执行环境为当前 Codex 会话；本环境未公开可固定的软件构建版本，故不虚构 Agent 版本号。
 本次补充验收仍是合成 Gateway，不能替代生产调用与资金核账。
+
+## 官方地址默认值（2026-10-23）
+
+新增只配置 Key 即使用官方 Gateway 的离线测试，以及显式空 URL 不得静默回退的测试。32 项测试与官方格式校验通过；未发起生产请求，也未验证该域名的 DNS、TLS 或生产部署。

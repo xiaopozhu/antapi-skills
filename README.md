@@ -26,7 +26,7 @@ This uses the npm-distributed [`skills` installer](https://github.com/vercel-lab
 
 - A supported Node.js runtime for the installer; see its [installation documentation](https://github.com/vercel-labs/skills#install-a-skill).
 - Python 3.9+ and network access; the bundled HTTP helper uses only Python standard-library modules and public API v1.
-- Privately provisioned `ANTAPI_GATEWAY_URL` and `ANTAPI_KEY` in your agent's execution environment. Never paste credentials into agent chat or command arguments.
+- Privately provisioned `ANTAPI_KEY` in your agent's execution environment. Never paste credentials into agent chat or command arguments. The Skill uses `https://api.antapi.dev` by default; optional `ANTAPI_GATEWAY_URL` is only needed to select another environment.
 
 The Skill calls the API directly and does not check or install the separate CLI. Installing a Skill does not create an API key. `ANTAPI_KEY` matches HTTP API examples; the optional CLI uses `ANTAPI_API_KEY`.
 

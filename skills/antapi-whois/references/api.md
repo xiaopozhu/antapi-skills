@@ -4,7 +4,7 @@ Public API major: `v1`. Install the complete `antapi-whois` folder with its `scr
 
 ## Local configuration
 
-Have the user provision `ANTAPI_GATEWAY_URL` and `ANTAPI_KEY` privately in the environment used by the agent's execution tool. The Gateway URL is an HTTPS origin without a path, query, fragment or embedded credentials. Preserve the user's selected deployment; do not invent a production hostname or send keys to Own API directly.
+Have the user provision only `ANTAPI_KEY` privately in the environment used by the agent's execution tool. The helper defaults to the official Gateway `https://api.antapi.dev`; no URL configuration is required. For an explicitly selected test or development environment, optional `ANTAPI_GATEWAY_URL` overrides that default. An override must be an HTTPS origin without a path, query, fragment or embedded credentials. Preserve an existing explicit override; never send keys to Own API directly.
 
 Do not read out, print, request in chat or embed the key in command arguments. The helper reads it from its environment. The separate AntAPI CLI uses `ANTAPI_API_KEY`; this standalone Skill uses `ANTAPI_KEY`, matching HTTP API examples. There is no CLI profile or CLI version prerequisite.
 
