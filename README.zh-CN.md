@@ -2,35 +2,35 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-所有 AntAPI 官方产品 Skills 的集中仓库。每个 Skill 支持单独安装，通过官方 CLI 调用同一套平台 API、AK 和 Credits。
+所有 AntAPI 官方产品 Skills 的集中仓库。每个 Skill 支持单独安装，由 Agent 使用项目 Key 和 Credits 直接调用对应 HTTP API。AntAPI CLI 是独立、可选的接入方式。
 
 ## 当前状态
 
-已实现首个候选 Skill `skills/antapi-whois`，支持域名注册信息和 TLD 覆盖查询，依赖官方 CLI
-`>=0.1.0 <1.0.0` 与公开 API v1。Skill 和引用面向全球用户使用英文；仓库工程文档使用中文。
+已实现首个候选 Skill `skills/antapi-whois`，支持域名注册信息和 TLD 覆盖查询，使用 Python 3.9+ 与公开 API v1，不依赖 CLI。
+仓库当前保持私有，由所有者决定正式公开。Skill 和引用面向全球用户使用英文；仓库工程文档使用中文。
 候选版本为 `0.1.0`，尚未正式发布。CI 与本地格式检查通过不表示生产调用已验收。默认 README 使用英文，并提供本中文版。
 
-## 使用 npx skills 安装
+## 单独安装 Skill
 
-在项目目录运行：
+从经过验证的归档或有权访问的源码中取得完整 `skills/antapi-whois/`，放入 Agent 的 Skills 目录并保留 scripts 与 references，无需安装 CLI。已有本地源码时，也可运行：
 
 ```bash
-npx skills add xiaopozhu/antapi-skills --skill antapi-whois
+npx skills add /absolute/path/to/antapi-skills --skill antapi-whois
 ```
 
 安装器会让你选择 Agent；加 `-g` 可全局安装，加 `--agent codex` 可指定 Codex。仅列出可用 Skill：
 
 ```bash
-npx skills add xiaopozhu/antapi-skills --list
+npx skills add /absolute/path/to/antapi-skills --list
 ```
 
 这是通过 npm 分发的 [skills 安装器](https://github.com/vercel-labs/skills) 从 GitHub 获取 Skill，
 无需将本仓库另行发布到 npm registry。Node.js 版本要求以安装器的官方说明为准。
 
-以上命令跟随仓库默认分支，当前用于安装开发候选版，不代表正式产品发布。正式安装入口将固定到
-已验证的 tag/commit 或 Release archive。Skill 需要本地配置的 Gateway、凭据与稳定 CLI
-`>=0.1.0 <1.0.0`；首个 CLI 稳定版尚未发布，`dev` 构建会被版本检查拒绝。
-安装 Skill 不会安装 CLI 或配置 AK，凭据按 CLI README 在本机配置，不放入聊天。
+本地源码或候选归档不代表正式产品发布。正式安装入口固定到已验证的 tag/commit 或 Release archive。
+在 Agent 的执行环境中私下配置 `ANTAPI_GATEWAY_URL` 与 `ANTAPI_KEY`，Skill 即可直接调用 API。
+Skill 与 HTTP 示例使用 `ANTAPI_KEY`；可选 CLI 使用 `ANTAPI_API_KEY`，两者没有安装依赖。
+不要把真实凭据放入聊天或命令参数。安装 Skill 不会创建 API key；手动复制目录不需要 Node.js。
 
 ## 本地检查
 
@@ -56,7 +56,7 @@ make test
 `make verify` 在结构及脚本测试后调用官方校验器；零 Skill 时明确显示未进行格式校验。`tests/whois-scenarios.json` 是无真实 AK 的行为验收输入与准则，存在场景文件不表示验收已执行。
 
 检查器仍允许初始化 fixture 的 `skills/` 为空并明确打印 `nothing installable`；正式发布前运行
-`make check-release SKILLS_REF=.venv/bin/skills-ref`，空仓库必须失败。发布还必须完成 CLI 联合测试与真实 Agent 任务验收。
+`make check-release SKILLS_REF=.venv/bin/skills-ref`，空仓库必须失败。发布还必须完成独立 HTTP 联合测试与真实 Agent 任务验收。
 场景及实际执行证据边界见 [验收说明](tests/README.md)。
 
 ## 候选包
@@ -83,10 +83,10 @@ skills/
 
 Skill 围绕用户任务和产品划分，不为每个 endpoint 单独创建 Skill。命名和 frontmatter 遵循 [Agent Skills 规范](https://agentskills.io/specification)。每个目录可独立分发，引用不能依赖其他 Skill 或仓库外部相对路径。
 
-`SKILL.md` 说明触发条件、CLI 依赖、流程、数量上限、错误恢复和凭据使用方式。HTTP、认证和重试能力由官方 CLI 提供，只有任务编排需要时才增加薄脚本。
+`SKILL.md` 说明触发条件、API 与运行要求、流程、数量上限、错误恢复和凭据使用方式。WHOIS 随包 HTTP helper 每次只发一个请求，30 秒超时、1 MiB 响应上限，不跟随跳转、不自动重试、不默认持久化正文。
 
 ## 发布范围
 
 本仓库仅分发面向调用方的产品 Skill。内部发布、运维和管理员 Skill 放在私有 AntAPI 项目中，不进入本仓库、安装列表或分发归档。
 
-所有产品 Skill 使用仓库级版本/tag，与 CLI 独立版本。每个 Skill 声明 CLI 兼容范围和公开 API 主版本；稳定安装固定到已验证的 tag/commit 或归档。默认分支仅预览候选。CI 只验证，不在 push/tag 时自动发布。
+所有产品 Skill 使用仓库级版本/tag，与 API、CLI 独立版本。每个 Skill 声明公开 API 主版本和真实运行要求；稳定安装固定到已验证的 tag/commit 或归档。本地安装候选不会发布任何内容。CI 只验证，不在 push/tag 时自动发布。

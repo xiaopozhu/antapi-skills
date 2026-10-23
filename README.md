@@ -2,39 +2,39 @@
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-Official AntAPI product skills for coding agents. Use the official [AntAPI CLI](https://github.com/xiaopozhu/antapi-cli) to access the same platform APIs, API keys, and Credits.
+Official AntAPI product Skills for coding agents. Install a Skill on its own and let your agent call the product's HTTP API directly with your project key and Credits. The [AntAPI CLI](https://github.com/xiaopozhu/antapi-cli) is a separate, optional tool.
 
-## Install with `npx skills`
+## Install independently
 
-Run from your project directory:
+Obtain a verified release archive or an authorized source checkout. Copy the complete `skills/antapi-whois/` folder into your agent's Skills directory, including `SKILL.md`, `scripts/` and `references/`. No AntAPI CLI installation is needed. With a local checkout, you can also run:
 
 ```bash
-npx skills add xiaopozhu/antapi-skills --skill antapi-whois
+npx skills add /absolute/path/to/antapi-skills --skill antapi-whois
 ```
 
 Choose your coding agent when prompted. Add `-g` for a user-wide installation, or `--agent codex` to target Codex. To list available skills:
 
 ```bash
-npx skills add xiaopozhu/antapi-skills --list
+npx skills add /absolute/path/to/antapi-skills --list
 ```
 
-This uses the npm-distributed [`skills` installer](https://github.com/vercel-labs/skills) to fetch skills from GitHub. The `antapi-skills` repository does not need its own npm registry package.
+This uses the npm-distributed [`skills` installer](https://github.com/vercel-labs/skills). The repository does not need its own npm registry package. Manual folder installation does not need Node.js.
 
-**Current status:** this command follows the repository's default branch and installs a development candidate. It is not a stable product release. The first WHOIS Skill candidate is `0.1.0`; production API and billing acceptance are pending. Stable installation sources will be pinned to verified tags/commits or release archives.
+**Current status:** this repository is private; its owner controls the public launch. A local checkout or candidate archive is not a stable public release. The WHOIS Skill candidate is `0.1.0`; production API and billing acceptance are pending. Stable public installation sources must be pinned to verified tags/commits or release archives.
 
 ### Product skill requirements
 
 - A supported Node.js runtime for the installer; see its [installation documentation](https://github.com/vercel-labs/skills#install-a-skill).
-- Official AntAPI CLI, stable version `>=0.1.0 <1.0.0`, using public API v1.
-- A locally configured Gateway profile and API key. Follow the CLI README; never paste credentials into agent chat.
+- Python 3.9+ and network access; the bundled HTTP helper uses only Python standard-library modules and public API v1.
+- Privately provisioned `ANTAPI_GATEWAY_URL` and `ANTAPI_KEY` in your agent's execution environment. Never paste credentials into agent chat or command arguments.
 
-The CLI's first stable release has not been published yet. Development CLI builds report `dev`, which the Skill rejects. Installing a Skill does not install the CLI or configure credentials.
+The Skill calls the API directly and does not check or install the separate CLI. Installing a Skill does not create an API key. `ANTAPI_KEY` matches HTTP API examples; the optional CLI uses `ANTAPI_API_KEY`.
 
 ## Available skills
 
-| Skill | Purpose | CLI compatibility |
+| Skill | Purpose | API / runtime |
 | --- | --- | --- |
-| [`antapi-whois`](skills/antapi-whois/SKILL.md) | Domain registration details and TLD coverage | `>=0.1.0 <1.0.0` |
+| [`antapi-whois`](skills/antapi-whois/SKILL.md) | Domain registration details and TLD coverage | API v1; Python 3.9+; no CLI dependency |
 
 Skills and bundled references are English. Code comments and engineering notes are Chinese; README files are available in both languages.
 
@@ -83,10 +83,10 @@ skills/
     scripts/       # only when a workflow needs a helper
 ```
 
-Organize skills around user tasks and products, following the [Agent Skills specification](https://agentskills.io/specification). Each directory must work independently, with no cross-skill relative dependencies. `SKILL.md` defines triggers, CLI/API compatibility, workflow, authorization bounds, interpretation, and recovery. HTTP, authentication, and retry behavior belong to the CLI.
+Organize skills around user tasks and products, following the [Agent Skills specification](https://agentskills.io/specification). Each directory must work independently, with no cross-skill relative dependencies. `SKILL.md` defines triggers, API/runtime compatibility, workflow, authorization bounds, interpretation, and recovery. WHOIS includes a bounded HTTP helper: one request, 30-second timeout, 1 MiB response cap, no redirects or retries, and no default body persistence.
 
 ## Releases
 
 This repository contains customer-facing product skills only. Internal release, operations, and administrator skills belong in the private AntAPI project and are excluded from distribution.
 
-All product skills share one repository version/tag. CLI and Skills versions are independent; each skill declares its supported CLI range and public API major. Stable installation sources are pinned to verified tags/commits or archives. The default-branch install above previews candidates. CI validates changes and does not automatically publish on push or tag.
+All product skills share one repository version/tag. API, Skills and CLI releases are independent; each Skill declares its public API major and actual runtime requirements. Stable installation sources are pinned to verified tags/commits or archives. Local candidate installation does not publish anything. CI validates changes and does not automatically publish on push or tag.

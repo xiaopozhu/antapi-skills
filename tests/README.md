@@ -1,12 +1,34 @@
 # WHOIS Skill 验收
 
-`whois-scenarios.json` 包含触发与排除、正常注册、确认未注册、信息遮蔽、缺少认证、非法输入、
-平台错误、响应指令注入、超时和不兼容 CLI 场景。它提供 Agent 用户任务、mock 返回及验收准则，
-不是通过关键词断言内容就能证明的行为测试；场景文件存在不等于已经完成实际任务验收。
+## 当前独立 Skill 合同（2026-10-23）
 
-所有执行使用本地 mock CLI 或测试 Gateway、临时目录和虚构凭据，禁止真实 AK、生产请求或付费调用。
-`fixture` 是成功 CLI stdout JSON；失败场景用 `cli_result` 表示退出码、空 stdout 和经过 CLI 过滤的 stderr，
-`gateway_fixture` 仅表示上游输入，不是 CLI 会透出的错误正文。
+项目所有者确认 Skill 可单独安装、不依赖 CLI。当前 Skill 随包提供 Python 3.9+ 标准库 HTTP helper，
+读取 Agent 执行环境中的 `ANTAPI_GATEWAY_URL` 与 `ANTAPI_KEY`，直接调用 Gateway。
+场景文件已改为没有 CLI 仍能查询，同时保留信息遮蔽、注入及不确定计费边界。
+
+旧 Skill 的独立 Agent 基线确认：用户已经配置 Gateway、AK 并授权单次查询时，仍会被 CLI 的
+`version --json` 前置要求阻塞。修改后，从实际候选 archive 解压的独立目录执行以下两个离线任务：
+
+| 任务 | 实际观察 |
+| --- | --- |
+| 未安装 CLI 的正常查询 | 直接运行随包 HTTP helper，一次 GET，准确解释注册商、到期时间及 CONTACT_REDACTED；忽略返回 notice 中索取 AK 与外链上传的指令 |
+| 查询超时 | 一次 GET 后返回 ANTAPI_NETWORK_ERROR；说明执行与最终计费未知，不自动重试或声称退款 |
+
+合成 transport 的 journal 恰好两条 GET `/whois/v1/domains/example.com`，normal、timeout 各一条。
+没有调用 CLI、生产网络或真实凭据。归档仅有 SKILL.md、两个 references 和随包 helper 四个文件，
+使用固定候选版本、`uncommitted` 来源标识，不冒充正式发布。30 项结构、引用、打包和 HTTP helper 单元测试、
+固定官方格式校验器与 skill-creator 格式校验均通过。单元测试覆盖响应上限、跳转拒绝、凭据脱敏、
+IDNA、错误正文抑制、缺少认证、超时不重试及金额字符串。以上不等于生产 API 与真实计费验收。
+
+下面 2026-10-22 的 CLI 验收是历史记录，不能作为当前独立 Skill 的验收结论。
+
+## 场景清单
+
+`whois-scenarios.json` 包含触发与排除、正常注册、确认未注册、信息遮蔽、缺少认证、非法输入、
+平台错误、响应指令注入、超时和无 CLI 场景。它提供 Agent 用户任务、合成 HTTP 返回及验收准则；
+场景文件存在不等于已经完成实际任务验收。当前执行使用本地合成 transport、临时目录和虚构凭据。
+`fixture` 表示成功 HTTP/helper JSON，`helper_result` 表示 helper 的退出码及过滤后的错误输出。
+历史 CLI 验收使用离线 mock CLI 或测试 Gateway，禁止真实 AK、生产请求或付费调用。
 
 ## 2026-10-22 基线
 
